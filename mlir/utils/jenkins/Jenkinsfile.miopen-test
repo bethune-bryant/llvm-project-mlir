@@ -16,6 +16,10 @@ pipeline {
         stage('Build libMLIRMIOpen') {
             steps {
                 checkout scm
+                script {
+                   MLIR_DIR=sh(script:'pwd', returnStdout: true).trim()
+                   env.MLIR_DIR = MLIR_DIR
+                }   
                 sh '''
                     mkdir -p build && cd build
                     /usr/local/bin/cmake -G "Unix Makefiles" ../llvm \
@@ -32,6 +36,7 @@ pipeline {
             steps {
                 checkout scm
                 sh '''
+                    cd ..
                     git clone https://github.com/ROCmSoftwarePlatform/MIOpen.git
                     cd MIOpen
                     mkdir -p build && cd build
@@ -41,13 +46,11 @@ pipeline {
                          -DMIOPEN_TEST_FLAGS='--verbose \
                          --disable-verification-cache' ..
                     make -j MIOpenDriver
-                    pwd
-                    ls ../.. 
-                    bash ../../mlir/utils/jenkins/miopen-tests/resnet50_fp16_nchw.sh
-                    bash ../../mlir/utils/jenkins/miopen-tests/resnet50_fp32_nchw.sh
-                    bash ../../mlir/utils/jenkins/miopen-tests/resnet50_fp16_nhwc.sh
-                    bash ../../mlir/utils/jenkins/miopen-tests/resnet50_fp32_nhwc.sh
-                    
+                    bash $MLIR_DIR/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nchw.sh &
+                    bash $MLIR_DIR/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nchw.sh &
+                    bash $MLIR_DIR/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nhwc.sh &
+                    bash $MLIR_DIR/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nhwc.sh &
+                    wait 
                 '''
             }
         }
