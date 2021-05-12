@@ -9,6 +9,8 @@ export MIOPEN_DEBUG_CONV_GEMM=0
 export MIOPEN_DRIVER_USE_GPU_REFERENCE=1
 cleanup
 
+set -e
+
 # Fwd
 export MIOPEN_DEBUG_FIND_ONLY_SOLVER=ConvMlirIgemmFwdXdlop
 bin/MIOpenDriver conv -F 1 -n 256 -c 1024 -H 14 -W 14 -k 2048 -y 1 -x 1 -p 0 -q 0 -u 2 -v 2 -l 1 -j 1 -m conv -g 1 -t 1
