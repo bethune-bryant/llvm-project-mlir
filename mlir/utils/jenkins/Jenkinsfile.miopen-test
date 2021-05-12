@@ -17,7 +17,7 @@ pipeline {
             steps {
                 checkout scm
                 script {
-                   MLIR_DIR=sh(script:'pwd', returnStdout: true).trim()
+                   MLIR_DIR = sh(script:'pwd', returnStdout: true).trim()
                    env.MLIR_DIR = MLIR_DIR
                 }   
                 sh '''
@@ -46,10 +46,10 @@ pipeline {
                          -DMIOPEN_TEST_FLAGS='--verbose \
                          --disable-verification-cache' ..
                     make -j MIOpenDriver
-                    bash $MLIR_DIR/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nchw.sh &
-                    bash $MLIR_DIR/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nchw.sh &
-                    bash $MLIR_DIR/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nhwc.sh &
-                    bash $MLIR_DIR/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nhwc.sh &
+                    bash ${env.MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nchw.sh &
+                    bash ${env.MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nchw.sh &
+                    bash ${env.MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nhwc.sh &
+                    bash ${env.MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nhwc.sh &
                     wait 
                 '''
             }
