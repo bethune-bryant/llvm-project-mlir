@@ -33,6 +33,8 @@ pipeline {
                 checkout scm
                 sh '''
                     cd ..
+                    mkdir $BUILD_TAG
+                    cd $BUILD_TAG
                     git clone https://github.com/ROCmSoftwarePlatform/MIOpen.git
                     cd MIOpen
                     mkdir -p build && cd build
@@ -47,6 +49,8 @@ pipeline {
                     bash $WORKSPACE/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nhwc.sh &
                     bash $WORKSPACE/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nhwc.sh &
                     wait 
+                    cd ../../../
+                    rm -rf $BUILD_TAG
                 '''
             }
         }
