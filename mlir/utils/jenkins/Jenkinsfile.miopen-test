@@ -6,9 +6,6 @@ pipeline {
             label 'gfx908'
         }
     }
-    environment {
-       MLIR_DIR = '''${sh(script:'pwd', returnStdout: true).trim()}'''
-    }   
     stages {
         stage('Environment') {
             steps {
@@ -21,13 +18,13 @@ pipeline {
                 checkout scm
                 sh '''
                     mkdir -p build && cd build
-                    /usr/local/bin/cmake -G "Unix Makefiles" ../llvm \
-                         -DLLVM_ENABLE_PROJECTS="mlir;lld" \
-                         -DCMAKE_BUILD_TYPE=Release \
-                         -DBUILD_SHARED_LIBS=OFF \
-                         -DLLVM_BUILD_LLVM_DYLIB=OFF \
-                         -DLLVM_ENABLE_TERMINFO=OFF
-                    make -j$(nproc) libMLIRMIOpen
+                    #/usr/local/bin/cmake -G "Unix Makefiles" ../llvm \
+                    #     -DLLVM_ENABLE_PROJECTS="mlir;lld" \
+                    #     -DCMAKE_BUILD_TYPE=Release \
+                    #     -DBUILD_SHARED_LIBS=OFF \
+                    #     -DLLVM_BUILD_LLVM_DYLIB=OFF \
+                    #     -DLLVM_ENABLE_TERMINFO=OFF
+                    #make -j$(nproc) libMLIRMIOpen
                 '''
             }
         }
@@ -35,6 +32,9 @@ pipeline {
             steps {
                 checkout scm
                 sh '''
+                    echo $WORKSPACE
+                    echo $JOB_NAME
+                    ls $WORKSPACE/$JOB_NAME/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nchw.sh
                     cd ..
                     git clone https://github.com/ROCmSoftwarePlatform/MIOpen.git
                     cd MIOpen
@@ -44,11 +44,11 @@ pipeline {
                          -DCMAKE_BUILD_TYPE=release \
                          -DMIOPEN_TEST_FLAGS='--verbose \
                          --disable-verification-cache' ..
-                    make -j MIOpenDriver
-                    bash ${MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nchw.sh &
-                    bash ${MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nchw.sh &
-                    bash ${MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nhwc.sh &
-                    bash ${MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nhwc.sh &
+                    #make -j MIOpenDriver
+                    #bash ${MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nchw.sh &
+                    #bash ${MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nchw.sh &
+                    #bash ${MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nhwc.sh &
+                    #bash ${MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nhwc.sh &
                     wait 
                 '''
             }
