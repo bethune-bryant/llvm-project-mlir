@@ -6,6 +6,9 @@ pipeline {
             label 'gfx908'
         }
     }
+    environment {
+       MLIR_DIR = '''${sh(script:'pwd', returnStdout: true).trim()}'''
+    }   
     stages {
         stage('Environment') {
             steps {
@@ -16,10 +19,6 @@ pipeline {
         stage('Build libMLIRMIOpen') {
             steps {
                 checkout scm
-                script {
-                   MLIR_DIR = sh(script:'pwd', returnStdout: true).trim()
-                   env.MLIR_DIR = MLIR_DIR
-                }   
                 sh '''
                     mkdir -p build && cd build
                     /usr/local/bin/cmake -G "Unix Makefiles" ../llvm \
@@ -46,10 +45,10 @@ pipeline {
                          -DMIOPEN_TEST_FLAGS='--verbose \
                          --disable-verification-cache' ..
                     make -j MIOpenDriver
-                    bash ${env.MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nchw.sh &
-                    bash ${env.MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nchw.sh &
-                    bash ${env.MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nhwc.sh &
-                    bash ${env.MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nhwc.sh &
+                    bash ${MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nchw.sh &
+                    bash ${MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nchw.sh &
+                    bash ${MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp16_nhwc.sh &
+                    bash ${MLIR_DIR}/mlir/utils/jenkins/miopen-tests/resnet50_fp32_nhwc.sh &
                     wait 
                 '''
             }
