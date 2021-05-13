@@ -43,6 +43,8 @@ wait
 if [ $n != $a ]
 then
   exit 1
+else
+  echo "Fwd passed"
 fi;)
 
 ## Wrw
@@ -76,5 +78,7 @@ wait
 if [ $n != $a ]
 then
   exit 1
+else
+  echo "Wrw passed"
 fi;)
 
